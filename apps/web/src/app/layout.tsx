@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AI Place Finder",
+  title: "Heypico - AI Place Finder",
   description: "Find places through AI-powered chat",
 };
 
