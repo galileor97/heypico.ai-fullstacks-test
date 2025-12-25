@@ -2,6 +2,61 @@
 
 A comprehensive full-stack AI-powered location assistant application built with Elysia (Bun) backend and Next.js frontend, featuring intelligent place search using Google Maps API and LLM integration (OpenAI/Ollama).
 
+## 🛠️ Tech Stack
+
+### Backend
+
+| Technology | Version | Why This Choice? |
+|------------|---------|------------------|
+| **Bun** | 1.2+ | Ultra-fast JavaScript runtime with built-in bundler, test runner, and package manager. ~4x faster than Node.js for HTTP servers. |
+| **Elysia** | 1.2.x | Type-safe, high-performance web framework built for Bun. [~21x faster than FastAPI](https://medium.com/deno-the-complete-reference/url-shortener-service-benchmarking-bun-elysia-vs-python-fastapi-9e74857eafe1) in benchmarks. Trusted by AI companies like [Cluely](https://jobs.ashbyhq.com/cluely/9ed623a7-fc2d-4afc-ab88-a01af977cb9f). Offers end-to-end type safety with minimal boilerplate. |
+| **Vercel AI SDK** | 4.x | Unified API for LLM providers with streaming support, tool calling, and React hooks integration. Framework-agnostic and production-ready. |
+| **Zod** | 3.x | TypeScript-first schema validation with excellent type inference. Perfect pairing with Elysia for request/response validation. |
+| **OpenAI/Ollama** | - | Flexible LLM support: OpenAI for production reliability, Ollama for local development and cost-free experimentation. |
+
+### Frontend
+
+| Technology | Version | Why This Choice? |
+|------------|---------|------------------|
+| **Next.js** | 15.x | React framework with App Router, server components, and built-in optimizations. Industry standard for React production apps. |
+| **React** | 19.x | Latest React with improved performance, concurrent features, and better server component support. |
+| **TypeScript** | 5.x | Type safety across the entire codebase, catching errors at compile time and improving developer productivity. |
+| **@vis.gl/react-google-maps** | 1.x | Official Google Maps React library with modern hooks API and excellent TypeScript support. |
+| **Lucide React** | 0.5x | Beautiful, consistent icon set with tree-shaking support. Lightweight alternative to FontAwesome. |
+| **React Markdown** | 10.x | Render AI responses with rich formatting (code blocks, lists, links) for better UX. |
+
+### Infrastructure & Tooling
+
+| Technology | Why This Choice? |
+|------------|------------------|
+| **Turborepo** | Monorepo build system with caching, parallel execution, and dependency management. Speeds up CI/CD significantly. |
+| **Turbopack** | Next.js's Rust-based bundler for instant hot module replacement during development. |
+| **Docker** | Containerization for consistent deployment across environments. Optimized multi-stage builds for Bun. |
+| **Vercel** | Seamless Next.js deployment with automatic previews, edge functions, and global CDN. |
+
+### APIs & Services
+
+| Service | Purpose |
+|---------|---------|
+| **Google Places API** | Location search, place details, photos, and reviews for intelligent place recommendations. |
+| **Google Maps JavaScript API** | Interactive map display with markers, info windows, and custom styling. |
+| **OpenAI API** | GPT-4o-mini for production-grade natural language understanding and generation. |
+| **Ollama** | Local LLM inference for development and privacy-conscious deployments. |
+
+### Why This Stack?
+
+1. **Performance First**: Bun + Elysia provides one of the fastest backend setups available, handling high-throughput with minimal latency.
+
+2. **Type Safety End-to-End**: TypeScript + Zod + Elysia ensures type consistency from API request to database to frontend response.
+
+3. **Modern React Patterns**: Next.js 15 + React 19 enables server components, streaming, and the latest React optimizations.
+
+4. **AI-Native Architecture**: Vercel AI SDK abstracts LLM complexity, making it trivial to switch between providers or add new ones.
+
+5. **Developer Experience**: Hot reloading, excellent error messages, auto-generated API docs, and monorepo tooling for fast iteration.
+
+6. **Production Ready**: All technologies are battle-tested in production environments with active maintenance and strong communities.
+
 ## 📁 Project Structure
 
 ```
