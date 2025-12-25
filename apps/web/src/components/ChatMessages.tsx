@@ -68,7 +68,7 @@ export function ChatMessages({
             >
               {message.role === "assistant" && (
                 <div className="chat-message-header">
-                  <Sparkles size={27} />
+                  <Sparkles size={23} />
                   <h2 className="text-lg">Answer</h2>
                 </div>
               )}
@@ -135,7 +135,7 @@ export function ChatMessages({
       {isLoading && !hasAssistantMessage && (
         <div className="chat-message chat-message-ai">
           <div className="chat-message-header">
-            <Sparkles size={16} />
+            <Sparkles size={23} />
             <span>Answer</span>
           </div>
           <div className="chat-message-content">
@@ -152,7 +152,7 @@ export function ChatMessages({
       {errorMessage && (
         <div className="chat-message chat-message-ai chat-message-error">
           <div className="chat-message-header chat-message-error-header">
-            <Sparkles size={27} />
+            <Sparkles size={23} />
             <h2 className="text-lg">Error</h2>
           </div>
           <div className="chat-message-content chat-message-error-content">
