@@ -55,6 +55,13 @@ export const chatRoute = new Elysia({ prefix: "/chat" })
       duration: 60000,
       max: env.CHAT_RATE_LIMIT,
       scoping: "scoped",
+      generator: (request, server) => {
+        const forwardedFor = request.headers.get("X-Forwarded-For");
+        if (forwardedFor) {
+          return forwardedFor.split(",")[0].trim();
+        }
+        return server?.requestIP(request)?.address ?? "";
+      },
       errorResponse: new Response(
         JSON.stringify({
           error:

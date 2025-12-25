@@ -86,6 +86,13 @@ export function createApp() {
         rateLimit({
           duration: 60000,
           max: 100,
+          generator: (request, server) => {
+            const forwardedFor = request.headers.get("X-Forwarded-For");
+            if (forwardedFor) {
+              return forwardedFor.split(",")[0].trim();
+            }
+            return server?.requestIP(request)?.address ?? "";
+          },
           errorResponse: new Response(
             JSON.stringify({
               error: "Too many requests. Please try again later.",
