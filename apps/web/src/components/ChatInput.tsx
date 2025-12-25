@@ -41,7 +41,7 @@ export function ChatInput({
           value={input}
           onChange={handleInputChange}
           onKeyDown={onKeyDown}
-          placeholder="Ask follow-up"
+          placeholder="Ask anything..."
           className="chat-input-textarea"
           disabled={isLoading}
           rows={1}
