@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://vault.instaguest.co/heypico.gif" alt="HEYPICO.AI Demo" width="800" />
+  <img src="./heypico.png" alt="HEYPICO.AI Demo" width="800" />
 </p>
 
 <h1 align="center">HEYPICO.AI - TEST</h1>
