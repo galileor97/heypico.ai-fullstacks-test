@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://vault.instaguest.co/heypico.gif" alt="HEYPICO.AI Demo" width="800" />
+</p>
+
 <h1 align="center">HEYPICO.AI - TEST</h1>
 
 A comprehensive full-stack AI-powered location assistant application built with Elysia (Bun) backend and Next.js frontend, featuring intelligent place search using Google Maps API and LLM integration (OpenAI/Ollama).
