@@ -8,6 +8,10 @@
   <a href="https://heypico-test.vercel.app">
     <img src="https://img.shields.io/badge/🚀_Live_Demo-Try_It_Now-brightgreen?style=for-the-badge" alt="Live Demo" />
   </a>
+  &nbsp;
+  <a href="https://www.youtube.com/watch?v=Qm5MvZUeKdg">
+    <img src="https://img.shields.io/badge/🎬_Watch_Demo-YouTube-red?style=for-the-badge" alt="Watch Demo" />
+  </a>
 </p>
 
 A comprehensive full-stack AI-powered location assistant application built with Elysia (Bun) backend and Next.js frontend, featuring intelligent place search using Google Maps API and LLM integration (OpenAI/Ollama).
