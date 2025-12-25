@@ -4,6 +4,12 @@
 
 <h1 align="center">HEYPICO.AI - TEST</h1>
 
+<p align="center">
+  <a href="https://heypico-test.vercel.app">
+    <img src="https://img.shields.io/badge/🚀_Live_Demo-Try_It_Now-brightgreen?style=for-the-badge" alt="Live Demo" />
+  </a>
+</p>
+
 A comprehensive full-stack AI-powered location assistant application built with Elysia (Bun) backend and Next.js frontend, featuring intelligent place search using Google Maps API and LLM integration (OpenAI/Ollama).
 
 ## 🛠️ Tech Stack
@@ -443,8 +449,8 @@ Returns: Image stream with proper headers
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd heypico
+   git clone https://github.com/galileor97/heypico.ai-fullstacks-test.git
+   cd heypico.ai-fullstacks-test
    ```
 
 2. **Set up API environment variables**
