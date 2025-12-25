@@ -1,22 +1,13 @@
-import { Elysia } from "elysia";
-import { cors } from "@elysiajs/cors";
+import { validateEnv, env } from "./env";
+import { createApp } from "./app";
 
-// Create the main Elysia app
-const app = new Elysia()
-  .use(cors())
-  .get("/", () => ({
-    message: "Welcome to HeyPico API",
-    version: "1.0.0",
-    timestamp: new Date().toISOString(),
-  }))
-  .get("/health", () => ({
-    status: "healthy",
-    uptime: process.uptime(),
-  }))
-  .listen(3001);
+// Validate environment variables before starting
+validateEnv();
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+// Create and start the application
+const app = createApp().listen(env.PORT);
 
-export type App = typeof app;
+console.log(`🦊 Elysia server running at http://localhost:${app.server?.port}`);
+
+// Export app for potential testing
+export { app };
