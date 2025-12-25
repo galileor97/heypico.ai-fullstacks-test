@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    title: "HeyPico",
-    description: "Welcome to HeyPico",
+  title: "AI Place Finder",
+  description: "Find places through AI-powered chat",
 };
 
 export default function RootLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-    return (
-        <html lang="en">
-            <body>{children}</body>
-        </html>
-    );
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
 }
