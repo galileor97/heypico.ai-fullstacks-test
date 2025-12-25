@@ -336,6 +336,38 @@ bun run check-types
 bun run build
 ```
 
+## 🌐 Deployment
+
+### Backend (API) - Docker/Dokploy
+
+The API includes a Dockerfile optimized for Bun runtime:
+
+```bash
+# Build from apps/api directory
+docker build -t heypico-api ./apps/api
+
+# Run with environment variables
+docker run -p 3001:3001 \
+  -e OPENAI_API_KEY=your_key \
+  -e GOOGLE_PLACES_API_KEY=your_key \
+  -e API_BASE_URL=https://your-api-domain.com \
+  -e FRONTEND_URL=https://your-frontend-domain.com \
+  heypico-api
+```
+
+**Environment Variables for Production:**
+- `API_BASE_URL`: Your production API URL (for photo proxy URLs)
+- `FRONTEND_URL`: Your frontend URL (for CORS)
+
+### Frontend (Web) - Vercel
+
+1. Connect your repository to Vercel
+2. Set the Root Directory to `apps/web`
+3. Add environment variable:
+   - `NEXT_PUBLIC_API_URL`: Your backend API URL
+   - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`: Your Google Maps API key
+4. Deploy!
+
 ### Environment Variables Reference
 
 | Variable | Description | Required | Default |
@@ -346,6 +378,7 @@ bun run build
 | `OLLAMA_BASE_URL` | Ollama server URL | No | `http://localhost:11434` |
 | `OLLAMA_MODEL` | Ollama model name | No | `llama3.2` |
 | `GOOGLE_PLACES_API_KEY` | Google Places API Key | Yes | - |
+| `API_BASE_URL` | Backend URL for photo proxies | No | `http://localhost:3001` |
 | `FRONTEND_URL` | Frontend URL for CORS | No | `http://localhost:3000` |
 | `PORT` | Backend server port | No | `3001` |
 | `CHAT_RATE_LIMIT` | Chat requests per minute | No | `10` |
