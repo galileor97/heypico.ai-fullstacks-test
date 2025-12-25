@@ -1,4 +1,4 @@
-# HEYPICO.AI - TEST 🤖🗺️
+# HEYPICO.AI - TEST
 
 A comprehensive full-stack AI-powered location assistant application built with Elysia (Bun) backend and Next.js frontend, featuring intelligent place search using Google Maps API and LLM integration (OpenAI/Ollama).
 
@@ -383,6 +383,7 @@ docker run -p 3001:3001 \
 | `PORT` | Backend server port | No | `3001` |
 | `CHAT_RATE_LIMIT` | Chat requests per minute | No | `10` |
 | `GOOGLE_PLACES_RATE_LIMIT` | Places API requests per minute | No | `100` |
+| `PLACES_MAX_COUNT` | Maximum places to return per search | No | `5` |
 
 *Required when `LLM_PROVIDER=cloud`
 

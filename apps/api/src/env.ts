@@ -20,6 +20,7 @@ export const env = {
   CHAT_RATE_LIMIT: Number(process.env.CHAT_RATE_LIMIT) || 10,
   GOOGLE_PLACES_RATE_LIMIT: Number(process.env.GOOGLE_PLACES_RATE_LIMIT) || 100,
   GOOGLE_PLACES_RATE_LIMIT_WINDOW: Number(process.env.GOOGLE_PLACES_RATE_LIMIT_WINDOW) || 60000,
+  PLACES_MAX_COUNT: Number(process.env.PLACES_MAX_COUNT) || 5,
 };
 
 export function validateEnv(): void {

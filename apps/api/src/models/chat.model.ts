@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { env } from "../env";
 
 // Schema for individual chat messages
 export const MessageSchema = z.object({
@@ -22,9 +23,9 @@ export const ShowPlacesParamsSchema = z.object({
   count: z
     .number()
     .min(1)
-    .max(5)
-    .default(5)
-    .describe("Number of places to return (1-5)"),
+    .max(env.PLACES_MAX_COUNT)
+    .default(env.PLACES_MAX_COUNT)
+    .describe(`Number of places to return (1-${env.PLACES_MAX_COUNT})`),
 });
 
 // Export inferred types from Zod schemas

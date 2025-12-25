@@ -134,6 +134,7 @@ export function MapCanvas({ placeData, isOpen, onClose }: MapCanvasProps) {
           {placeData && (
             <div className="map-content">
               <Map
+                key={placeData.placeId}
                 defaultCenter={{ lat: placeData.lat, lng: placeData.lng }}
                 defaultZoom={15}
                 mapId="ai-place-finder-map"

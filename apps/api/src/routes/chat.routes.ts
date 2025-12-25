@@ -34,9 +34,18 @@ WHEN NOT TO USE showPlaces TOOL:
 - Any question that doesn't ask for NEW place recommendations
 
 For place recommendations:
-1. Write ONE short friendly sentence
+1. Format each place with numbers and spacing like this:
+
+   1. **Place Name**
+   Brief description here.
+
+   2. **Place Name**
+   Brief description here.
+
+   (Number, name in bold, description on next line, blank line before next item)
 2. Call showPlaces tool with a SINGLE search query
-3. DO NOT list place names in your text
+3. Do NOT include addresses, images, or photo URLs - the cards show those
+4. Keep descriptions short (one sentence)
 
 For follow-up questions and general conversation:
 - Just answer naturally without calling any tool
@@ -46,7 +55,7 @@ For follow-up questions and general conversation:
 When using showPlaces:
 - Use ONE general search query like "nasi goreng restaurants in Bintaro Jakarta"
 - The tool will return multiple results automatically
-- Set count to 5 for best results`;
+- Set count to ${env.PLACES_MAX_COUNT} for best results`;
 
 // Chat route controller with rate limiting
 export const chatRoute = new Elysia({ prefix: "/chat" })

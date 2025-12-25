@@ -42,8 +42,26 @@ export function ChatMessages({
               ? extractPlacesFromMessage(message)
               : null;
 
-          const hasContent =
-            message.content && message.content.trim().length > 0;
+          // Extract text content, filtering out tool call JSON and markdown images
+          const getTextContent = () => {
+            let content = message.content;
+
+            // For assistant messages, remove unwanted patterns
+            if (message.role === 'assistant' && content) {
+              // Remove JSON objects that look like tool call arguments
+              content = content.replace(/\{[^{}]*"query"[^{}]*\}/g, '');
+
+              // Remove markdown image syntax ![alt](url)
+              content = content.replace(/!\[[^\]]*\]\([^)]*\)/g, '');
+
+              content = content.trim();
+            }
+
+            return content;
+          };
+
+          const textContent = getTextContent();
+          const hasContent = textContent && textContent.trim().length > 0;
           const hasPlaces = places && places.length > 0;
           const isLastMessage = index === messages.length - 1;
           const isCurrentlyStreaming = isLastMessage && isLoading;
@@ -94,7 +112,7 @@ export function ChatMessages({
                       img: () => null,
                     }}
                   >
-                    {message.content}
+                    {textContent}
                   </ReactMarkdown>
                 </div>
               )}
@@ -121,7 +139,7 @@ export function ChatMessages({
                     size={14}
                     className="cursor-pointer hover:opacity-100"
                     onClick={() => {
-                      navigator.clipboard.writeText(message.content);
+                      navigator.clipboard.writeText(textContent);
                     }}
                     aria-label="Copy message"
                   />
