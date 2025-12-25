@@ -2,38 +2,23 @@
 FROM oven/bun:1.2 AS base
 WORKDIR /app
 
-# install dependencies into temp directory
-# this will cache them and speed up future builds
+# install dependencies
 FROM base AS install
-RUN mkdir -p /temp/dev
-COPY apps/api/package.json /temp/dev/
-COPY bun.lock /temp/dev/
-RUN cd /temp/dev && bun install
+COPY package.json ./
+RUN bun install
 
-# install with --production (exclude devDependencies)
-RUN mkdir -p /temp/prod
-COPY apps/api/package.json /temp/prod/
-COPY bun.lock /temp/prod/
-RUN cd /temp/prod && bun install --production
-
-# copy node_modules from temp directory
-# then copy all (non-ignored) project files into the image
-FROM base AS prerelease
-COPY --from=install /temp/dev/node_modules node_modules
-COPY apps/api/src ./src
-COPY apps/api/package.json .
-
-# [optional] tests & build
-ENV NODE_ENV=production
-
-# copy production dependencies and source code into final image
+# copy source code
 FROM base AS release
-COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /app/src ./src
-COPY --from=prerelease /app/package.json .
+COPY --from=install /app/node_modules ./node_modules
+COPY package.json ./
+COPY src ./src
+
+# set production environment
+ENV NODE_ENV=production
 
 # run the app
 USER bun
 EXPOSE 3001/tcp
-ENTRYPOINT [ "bun", "run", "src/index.ts" ]
+CMD ["bun", "run", "src/index.ts"]
+
 
