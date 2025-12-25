@@ -29,7 +29,8 @@ export abstract class PlacesService {
   // Search for places using Google Places Text Search API
   static async searchPlaces(
     query: string,
-    count: number = 5
+    count: number = 5,
+    location?: { lat: number; lng: number }
   ): Promise<PlaceData[]> {
     const url = "https://places.googleapis.com/v1/places:searchText";
 
@@ -42,10 +43,27 @@ export abstract class PlacesService {
       return [];
     }
 
-    console.log("[PlacesService] Searching:", query, "count:", count);
+    console.log("[PlacesService] Searching:", query, "count:", count, "location:", location);
     placesRateLimiter.recordRequest();
 
     try {
+      const requestBody: any = {
+        textQuery: query,
+        maxResultCount: count,
+      };
+
+      if (location) {
+        requestBody.locationBias = {
+          circle: {
+            center: {
+              latitude: location.lat,
+              longitude: location.lng,
+            },
+            radius: 5000.0,
+          },
+        };
+      }
+
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -62,10 +80,7 @@ export abstract class PlacesService {
             "places.regularOpeningHours",
           ].join(","),
         },
-        body: JSON.stringify({
-          textQuery: query,
-          maxResultCount: count,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {

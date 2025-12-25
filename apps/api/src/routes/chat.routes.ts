@@ -82,9 +82,20 @@ export const chatRoute = new Elysia({ prefix: "/chat" })
   )
   .post(
     "/",
-    async ({ body }) => {
+    async ({ body, headers }) => {
       // Validate request body with Zod
       const { messages } = ChatRequestSchema.parse(body);
+
+      // Parse user location from header
+      let userLocation: { lat: number; lng: number } | undefined;
+      const locationHeader = headers["x-user-location"];
+      if (locationHeader) {
+        const [lat, lng] = locationHeader.split(",").map(Number);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          userLocation = { lat, lng };
+          console.log("[ChatRoute] User location:", userLocation);
+        }
+      }
 
       const result = streamText({
         model: getModel(),
@@ -101,10 +112,12 @@ export const chatRoute = new Elysia({ prefix: "/chat" })
                 "[ChatRoute] showPlaces called:",
                 query,
                 "count:",
-                count
+                count,
+                "location:",
+                userLocation
               );
 
-              const places = await searchPlaces(query, count);
+              const places = await searchPlaces(query, count, userLocation);
               console.log(
                 "[ChatRoute] showPlaces found",
                 places.length,
