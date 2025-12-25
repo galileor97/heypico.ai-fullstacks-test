@@ -22,7 +22,7 @@ export const PlacesResponseSchema = z.object({
 
 // Schema for error response
 export const PlacesErrorSchema = z.object({
-  error: z.string(),
+  error: z.string().min(1, { message: "Error message cannot be empty" }),
   query: z.string().optional(),
 });
 
