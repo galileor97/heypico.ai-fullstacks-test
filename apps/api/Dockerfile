@@ -6,24 +6,25 @@ WORKDIR /app
 # this will cache them and speed up future builds
 FROM base AS install
 RUN mkdir -p /temp/dev
-COPY package.json bun.lock /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
+COPY apps/api/package.json /temp/dev/
+COPY bun.lock /temp/dev/
+RUN cd /temp/dev && bun install
 
 # install with --production (exclude devDependencies)
 RUN mkdir -p /temp/prod
-COPY package.json bun.lock /temp/prod/
-RUN cd /temp/prod && bun install --frozen-lockfile --production
+COPY apps/api/package.json /temp/prod/
+COPY bun.lock /temp/prod/
+RUN cd /temp/prod && bun install --production
 
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
 FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
-COPY . .
+COPY apps/api/src ./src
+COPY apps/api/package.json .
 
 # [optional] tests & build
 ENV NODE_ENV=production
-# RUN bun test
-# RUN bun run build
 
 # copy production dependencies and source code into final image
 FROM base AS release
@@ -35,3 +36,4 @@ COPY --from=prerelease /app/package.json .
 USER bun
 EXPOSE 3001/tcp
 ENTRYPOINT [ "bun", "run", "src/index.ts" ]
+
