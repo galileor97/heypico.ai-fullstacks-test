@@ -24,6 +24,10 @@ export const env = {
 
 export function validateEnv(): void {
   // Only require OpenAI API key when using cloud provider
+  if (env.LLM_PROVIDER !== "cloud" && env.LLM_PROVIDER !== "local") {
+    throw new Error(`Invalid LLM_PROVIDER: ${env.LLM_PROVIDER}. Must be "cloud" or "local"`);
+  }
+  
   if (env.LLM_PROVIDER === "cloud" && !env.OPENAI_API_KEY) {
     throw new Error("OPENAI_API_KEY is required when using cloud provider");
   }
