@@ -59,7 +59,7 @@ export const chatRoute = new Elysia({ prefix: "/chat" })
 
       const result = streamText({
         model: openai("gpt-4o-mini"),
-        maxSteps: 3,
+        maxSteps: 5,
         system: SYSTEM_PROMPT,
         messages,
         tools: {
