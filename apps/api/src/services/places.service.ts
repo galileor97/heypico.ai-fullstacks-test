@@ -1,5 +1,5 @@
-import { env } from "../env";
 import { placesRateLimiter } from "../utils/rate-limiter";
+import { env } from "../env";
 import type { PlaceData } from "../models";
 
 // Google Places API response structure (internal)
@@ -18,9 +18,12 @@ interface GooglePlacesResponse {
 
 // Places Service - handles Google Places API interactions
 export abstract class PlacesService {
-  // Get photo URL from Google Places photo reference
+  // Get photo URL using the internal proxy route (does not expose API key on client)
   static getPhotoUrl(photoName: string, maxWidth: number = 400): string {
-    return `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=${maxWidth}&key=${env.GOOGLE_PLACES_API_KEY}`;
+    // URL-encode the photoName since it contains slashes (e.g., "places/xxx/photos/yyy")
+    const encodedPhotoName = encodeURIComponent(photoName);
+    // Return absolute URL so frontend can load from different origin
+    return `${env.API_BASE_URL}/photos/${encodedPhotoName}?maxWidth=${maxWidth}`;
   }
 
   // Search for places using Google Places Text Search API

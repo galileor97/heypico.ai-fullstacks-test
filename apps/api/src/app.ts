@@ -4,6 +4,7 @@ import { swagger } from "@elysiajs/swagger";
 import { rateLimit } from "elysia-rate-limit";
 import { env } from "./env";
 import { chatRoute } from "./routes/chat.routes";
+import { photosRoute } from "./routes/photos.routes";
 
 
 //Global error handler helper
@@ -67,6 +68,7 @@ export function createApp() {
             },
             tags: [
               { name: "Chat", description: "Chat endpoints" },
+              { name: "Photos", description: "Photo proxy endpoints" },
               { name: "Health", description: "Health check endpoints" },
             ],
           },
@@ -106,6 +108,7 @@ export function createApp() {
       }))
       // Mount route modules
       .use(chatRoute)
+      .use(photosRoute)
   );
 }
 
