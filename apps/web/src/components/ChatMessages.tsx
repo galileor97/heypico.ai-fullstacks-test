@@ -4,7 +4,7 @@ import { Message } from "ai";
 import ReactMarkdown from "react-markdown";
 import { PlaceData, extractPlacesFromMessage } from "../types";
 import { PlaceCarousel } from "./PlaceCarousel";
-import { Sparkles, Copy, RefreshCw } from "lucide-react";
+import { Sparkles, Copy } from "lucide-react";
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -61,11 +61,10 @@ export function ChatMessages({
           return (
             <div
               key={message.id}
-              className={`chat-message ${
-                message.role === "user"
-                  ? "chat-message-user"
-                  : "chat-message-ai"
-              }`}
+              className={`chat-message ${message.role === "user"
+                ? "chat-message-user"
+                : "chat-message-ai"
+                }`}
             >
               {message.role === "assistant" && (
                 <div className="chat-message-header">
@@ -108,8 +107,8 @@ export function ChatMessages({
                 />
               )}
 
-              {/* Action Buttons for AI messages - only show when done */}
-              {message.role === "assistant" && !isCurrentlyStreaming && (
+              {/* Action Buttons for AI messages - only show when done and has text content */}
+              {message.role === "assistant" && !isCurrentlyStreaming && hasContent && (
                 <div
                   style={{
                     display: "flex",
@@ -121,10 +120,10 @@ export function ChatMessages({
                   <Copy
                     size={14}
                     className="cursor-pointer hover:opacity-100"
-                  />
-                  <RefreshCw
-                    size={14}
-                    className="cursor-pointer hover:opacity-100"
+                    onClick={() => {
+                      navigator.clipboard.writeText(message.content);
+                    }}
+                    aria-label="Copy message"
                   />
                 </div>
               )}

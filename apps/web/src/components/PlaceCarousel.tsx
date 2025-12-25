@@ -20,11 +20,11 @@ export function PlaceCarousel({ places, onShowDetails }: PlaceCarouselProps) {
   );
 
   const formatReviews = (count?: number) => {
-    if (!count) return null;
+    if (count == null) return null;
     if (count >= 1000) {
       return `${(count / 1000).toFixed(1)}k reviews`;
     }
-    return `${count} reviews`;
+    return `${count} ${count === 1 ? "review" : "reviews"}`;
   };
 
   return (
@@ -46,11 +46,10 @@ export function PlaceCarousel({ places, onShowDetails }: PlaceCarouselProps) {
               )}
               {place.isOpen !== undefined && (
                 <span
-                  className={`place-card-status ${
-                    place.isOpen
+                  className={`place-card-status ${place.isOpen
                       ? "place-card-status-open"
                       : "place-card-status-closed"
-                  }`}
+                    }`}
                 >
                   {place.isOpen ? "Open" : "Closed"}
                 </span>

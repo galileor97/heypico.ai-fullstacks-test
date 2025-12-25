@@ -62,7 +62,11 @@ export function isPlaceError(data: unknown): data is PlaceError {
 
   const obj = data as Record<string, unknown>;
 
-  return typeof obj.error === "string" && Array.isArray(obj.queries);
+  return (
+    typeof obj.error === "string" &&
+    Array.isArray(obj.queries) &&
+    obj.queries.every((q) => typeof q === "string")
+  );
 }
 
 // Extract PlaceData array from tool invocations

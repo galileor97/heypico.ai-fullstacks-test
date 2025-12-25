@@ -25,17 +25,33 @@ function PlaceOverviewWrapper({
     onRequestError?: (e: Event) => void;
   }> | null>(null);
   const [hasError, setHasError] = useState(false);
+  const [importError, setImportError] = useState(false);
 
   useEffect(() => {
-    import("@googlemaps/extended-component-library/react").then((module) => {
-      setPlaceOverview(() => module.PlaceOverview);
-    });
+    import("@googlemaps/extended-component-library/react")
+      .then((module) => {
+        setPlaceOverview(() => module.PlaceOverview);
+      })
+      .catch(() => {
+        setImportError(true);
+      });
   }, []);
 
   useEffect(() => {
     // Reset error state when placeId changes
     setHasError(false);
   }, [placeId]);
+
+  if (importError) {
+    return (
+      <div className="place-overview-fallback">
+        <h3>{placeName}</h3>
+        <p className="place-overview-fallback-note">
+          Failed to load place details component
+        </p>
+      </div>
+    );
+  }
 
   if (!PlaceOverview) {
     return (
@@ -113,6 +129,7 @@ export function MapCanvas({ placeData, isOpen, onClose }: MapCanvasProps) {
           apiKey={apiKey}
           libraries={["places", "marker"]}
           onLoad={() => setMapError(null)}
+          onError={(error) => setMapError(error instanceof Error ? error : new Error(String(error)))}
         >
           {placeData && (
             <div className="map-content">
