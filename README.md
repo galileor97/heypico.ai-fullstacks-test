@@ -1,4 +1,4 @@
-# HEYPICO.AI - TEST
+<h1 align="center">HEYPICO.AI - TEST</h1>
 
 A comprehensive full-stack AI-powered location assistant application built with Elysia (Bun) backend and Next.js frontend, featuring intelligent place search using Google Maps API and LLM integration (OpenAI/Ollama).
 
@@ -322,10 +322,9 @@ cd apps/api
 bun test
 ```
 
-### Frontend Testing
+### Frontend Type Checking
 ```bash
 cd apps/web
-bun run lint
 bun run check-types
 ```
 
@@ -419,4 +418,3 @@ docker run -p 3001:3001 \
 
 ---
 
-**Built with ❤️ using Elysia, Next.js, and modern web technologies**
