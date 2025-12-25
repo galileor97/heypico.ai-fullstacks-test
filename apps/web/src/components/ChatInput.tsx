@@ -8,6 +8,7 @@ interface ChatInputProps {
   handleInputChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   handleSubmit: (e: FormEvent) => void;
   isLoading: boolean;
+  isEmpty: boolean;
 }
 
 export function ChatInput({
@@ -15,6 +16,7 @@ export function ChatInput({
   handleInputChange,
   handleSubmit,
   isLoading,
+  isEmpty,
 }: ChatInputProps) {
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -26,7 +28,7 @@ export function ChatInput({
   };
 
   return (
-    <div className="chat-input-container">
+    <div className={`chat-input-container ${isEmpty ? "chat-input-empty" : ""}`}>
       <form onSubmit={handleSubmit} className="chat-input-form">
         <button
           type="button"

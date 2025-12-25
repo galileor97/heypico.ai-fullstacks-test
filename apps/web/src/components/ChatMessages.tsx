@@ -32,8 +32,8 @@ export function ChatMessages({
   return (
     <div className="chat-messages">
       {messages.length === 0 ? (
-        <div className="chat-empty flex items-end justify-end h-full">
-          <h1 className="text-2xl font-bold">What do you want to know?</h1>
+        <div className="chat-empty">
+          <h1 className="text-2xl font-bold">Where should we begin?</h1>
         </div>
       ) : (
         messages.map((message, index) => {

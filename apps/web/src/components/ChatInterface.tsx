@@ -45,6 +45,7 @@ export function ChatInterface() {
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           isLoading={isLoading}
+          isEmpty={messages.length === 0}
         />
       </div>
       <MapCanvas

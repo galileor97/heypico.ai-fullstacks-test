@@ -130,12 +130,11 @@ h1 {
 .chat-empty {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
   justify-content: center;
   height: 100%;
-  color: var(--muted-foreground);
   text-align: center;
-  margin-top: -100px; /* Visual offset */
+  margin-top: -20px; /* Visual offset */
 }
 
 /* Message Styles */
@@ -264,6 +263,14 @@ h1 {
   max-width: 768px;
   padding: 0 1rem;
   z-index: 10;
+  transition: all 0.3s ease-in-out;
+}
+
+.chat-input-container.chat-input-empty {
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  margin-top: 20px; /* Position below the centered text */
 }
 
 .chat-input-form {
