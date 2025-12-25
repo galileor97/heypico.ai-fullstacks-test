@@ -258,6 +258,179 @@ rateLimit({
 - **Loading States**: Visual feedback during API calls
 - **Theme Support**: Dark/light mode with system preference detection
 
+## 🔄 Chat Architecture & Flow
+
+This section explains how the AI chat feature works, from user input to displaying place recommendations.
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              FRONTEND (Next.js)                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐       │
+│  │   ChatInterface  │───▶│   ChatMessages   │───▶│  PlaceCarousel   │       │
+│  │   (Main State)   │    │  (Render Messages)│    │  (Display Places)│       │
+│  └────────┬─────────┘    └──────────────────┘    └──────────────────┘       │
+│           │                                                                  │
+│           │ useChat() hook                                                   │
+│           ▼                                                                  │
+│  ┌──────────────────┐                           ┌──────────────────┐        │
+│  │    ChatInput     │                           │    MapCanvas     │        │
+│  │  (User Input)    │                           │  (Google Maps)   │        │
+│  └────────┬─────────┘                           └──────────────────┘        │
+│           │                                                                  │
+└───────────┼──────────────────────────────────────────────────────────────────┘
+            │ HTTP POST /chat (streaming)
+            ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              BACKEND (Elysia/Bun)                           │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐       │
+│  │   chat.routes    │───▶│   Vercel AI SDK  │───▶│   LLM Provider   │       │
+│  │  (Rate Limit)    │    │   (streamText)   │    │ (OpenAI/Ollama)  │       │
+│  └──────────────────┘    └────────┬─────────┘    └──────────────────┘       │
+│                                   │                                          │
+│                                   │ Tool Call: showPlaces                    │
+│                                   ▼                                          │
+│                          ┌──────────────────┐    ┌──────────────────┐       │
+│                          │  places.service  │───▶│ Google Places API│       │
+│                          │  (Search Places) │    │  (Text Search)   │       │
+│                          └──────────────────┘    └──────────────────┘       │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Sequence Flow
+
+```
+User                Frontend                 Backend                  External APIs
+ │                     │                        │                          │
+ │  1. Type message    │                        │                          │
+ │────────────────────▶│                        │                          │
+ │                     │                        │                          │
+ │                     │  2. POST /chat         │                          │
+ │                     │   {messages, headers}  │                          │
+ │                     │───────────────────────▶│                          │
+ │                     │                        │                          │
+ │                     │                        │  3. streamText()         │
+ │                     │                        │─────────────────────────▶│ OpenAI/Ollama
+ │                     │                        │                          │
+ │                     │                        │  4. LLM decides to       │
+ │                     │                        │     call showPlaces tool │
+ │                     │                        │◀─────────────────────────│
+ │                     │                        │                          │
+ │                     │                        │  5. searchPlaces()       │
+ │                     │                        │─────────────────────────▶│ Google Places
+ │                     │                        │                          │
+ │                     │                        │  6. Place results        │
+ │                     │                        │◀─────────────────────────│
+ │                     │                        │                          │
+ │                     │  7. Streaming response │                          │
+ │                     │     (text + tool data) │                          │
+ │                     │◀───────────────────────│                          │
+ │                     │                        │                          │
+ │  8. See AI response │                        │                          │
+ │     + Place cards   │                        │                          │
+ │◀────────────────────│                        │                          │
+ │                     │                        │                          │
+ │  9. Click place     │                        │                          │
+ │────────────────────▶│                        │                          │
+ │                     │                        │                          │
+ │  10. Map opens with │                        │                          │
+ │      place details  │                        │                          │
+ │◀────────────────────│                        │                          │
+```
+
+### Component Details
+
+#### Frontend Components
+
+| Component | File | Responsibility |
+|-----------|------|----------------|
+| `ChatInterface` | `ChatInterface.tsx` | Main container managing chat state using `useChat()` hook, user location, and map visibility |
+| `ChatMessages` | `ChatMessages.tsx` | Renders message list, extracts places from tool results, displays markdown content |
+| `ChatInput` | `ChatInput.tsx` | User input field with submit handling |
+| `PlaceCarousel` | `PlaceCarousel.tsx` | Horizontal scrollable cards showing place photos, names, and details |
+| `MapCanvas` | `MapCanvas.tsx` | Google Maps integration with markers and info windows |
+
+#### Backend Components
+
+| Component | File | Responsibility |
+|-----------|------|----------------|
+| `chatRoute` | `chat.routes.ts` | POST `/chat` endpoint with rate limiting, request validation, and LLM integration |
+| `showPlaces` tool | `chat.routes.ts` | AI tool that triggers place search when LLM detects location-related queries |
+| `PlacesService` | `places.service.ts` | Handles Google Places API calls, rate limiting, and photo URL generation |
+| `photosRoute` | `photos.routes.ts` | Proxy endpoint for serving place photos without exposing API keys |
+
+### Key Technical Details
+
+#### 1. Streaming Response
+The chat uses Vercel AI SDK's `streamText()` function for real-time streaming:
+```typescript
+const result = streamText({
+  model: getModel(),
+  maxSteps: 5,
+  system: SYSTEM_PROMPT,
+  messages,
+  tools: { showPlaces: tool({...}) }
+});
+return result.toDataStreamResponse();
+```
+
+#### 2. Tool Calling
+The LLM can call the `showPlaces` tool when it detects the user wants place recommendations:
+```typescript
+showPlaces: tool({
+  description: "Search and show places in a carousel...",
+  parameters: ShowPlacesParamsSchema,
+  execute: async ({ query, count }) => {
+    const places = await searchPlaces(query, count, userLocation);
+    return { places };
+  }
+})
+```
+
+#### 3. User Location
+The frontend captures user geolocation and sends it via header:
+```typescript
+headers: userLocation
+  ? { "X-User-Location": `${userLocation.lat},${userLocation.lng}` }
+  : {}
+```
+
+#### 4. Place Data Extraction
+The frontend extracts place data from assistant message tool invocations:
+```typescript
+const places = message.role === "assistant"
+  ? extractPlacesFromMessage(message)
+  : null;
+```
+
+#### 5. Photo Proxy
+Photos are served through a backend proxy to keep API keys secure:
+```
+Frontend Request: GET /photos/{encodedPhotoName}?maxWidth=400
+Backend Fetches: Google Places Photo API with API key
+Returns: Image stream with proper headers
+```
+
+### Data Flow Example
+
+**User Query:** "Find me good coffee shops in Bintaro"
+
+1. **Frontend** sends POST to `/chat` with message and location header
+2. **Backend** validates request, applies rate limiting
+3. **LLM** analyzes query, decides to call `showPlaces` tool
+4. **Tool execution** calls Google Places Text Search API
+5. **Places Service** transforms response to `PlaceData[]` format
+6. **Streaming response** returns AI text + tool results with places
+7. **Frontend** parses response, renders markdown text
+8. **PlaceCarousel** displays place cards with photos
+9. **User clicks** a place card → **MapCanvas** opens with marker
+
 ## 🚀 Quick Start
 
 ### Prerequisites
