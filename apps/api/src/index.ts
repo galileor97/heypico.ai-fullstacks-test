@@ -4,10 +4,15 @@ import { createApp } from "./app";
 // Validate environment variables before starting
 validateEnv();
 
-// Create and start the application
-const app = createApp().listen(env.PORT);
+// Create the application
+const app = createApp();
 
-console.log(`🦊 Elysia server running at http://localhost:${app.server?.port}`);
+// Only start the server when running locally (not on Vercel)
+// Vercel will use the default export
+if (process.env.VERCEL !== "1") {
+  app.listen(env.PORT);
+  console.log(`🦊 Elysia server running at http://localhost:${env.PORT}`);
+}
 
-// Export app for potential testing
-export { app };
+// Default export for Vercel serverless
+export default app;

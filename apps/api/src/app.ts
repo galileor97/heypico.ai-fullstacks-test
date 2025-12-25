@@ -121,3 +121,6 @@ export function createApp() {
 
 // Export app type for type inference
 export type App = ReturnType<typeof createApp>;
+
+// Default export for Vercel serverless
+export default createApp();
