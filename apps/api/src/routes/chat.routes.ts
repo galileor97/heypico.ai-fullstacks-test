@@ -2,9 +2,22 @@ import { Elysia, t } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
 import { streamText, tool } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { createOllama } from "ollama-ai-provider";
 import { env } from "../env";
 import { ChatRequestSchema, ShowPlacesParamsSchema } from "../models";
 import { searchPlaces } from "../services/places.service";
+
+// Dynamic model selection based on LLM_PROVIDER env
+function getModel() {
+  if (env.LLM_PROVIDER === "local") {
+    const ollamaProvider = createOllama({
+      baseURL: `${env.OLLAMA_BASE_URL}/api`,
+    });
+    return ollamaProvider(env.OLLAMA_MODEL);
+  }
+  return openai(env.OPENAI_MODEL);
+}
+
 
 
 // System prompt for the AI assistant
@@ -58,7 +71,7 @@ export const chatRoute = new Elysia({ prefix: "/chat" })
       const { messages } = ChatRequestSchema.parse(body);
 
       const result = streamText({
-        model: openai("gpt-4o-mini"),
+        model: getModel(),
         maxSteps: 5,
         system: SYSTEM_PROMPT,
         messages,
