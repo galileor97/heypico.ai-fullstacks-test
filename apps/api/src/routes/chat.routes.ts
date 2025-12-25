@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
 import { streamText, tool } from "ai";
 import { openai } from "@ai-sdk/openai";
@@ -51,48 +51,68 @@ export const chatRoute = new Elysia({ prefix: "/chat" })
       ),
     })
   )
-  .post("/", async ({ body }) => {
-    // Validate request body with Zod
-    const { messages } = ChatRequestSchema.parse(body);
+  .post(
+    "/",
+    async ({ body }) => {
+      // Validate request body with Zod
+      const { messages } = ChatRequestSchema.parse(body);
 
-    const result = streamText({
-      model: openai("gpt-4o-mini"),
-      maxSteps: 3,
-      system: SYSTEM_PROMPT,
-      messages,
-      tools: {
-        showPlaces: tool({
-          description:
-            "Search and show places in a carousel. Use a general search query like 'nasi goreng restaurants in Bintaro'. ONLY use when user asks for NEW place recommendations.",
-          parameters: ShowPlacesParamsSchema,
-          execute: async ({ query, count = 5 }) => {
-            console.log(
-              "[ChatRoute] showPlaces called:",
-              query,
-              "count:",
-              count
-            );
-
-            const places = await searchPlaces(query, count);
-            console.log(
-              "[ChatRoute] showPlaces found",
-              places.length,
-              "places"
-            );
-
-            if (places.length === 0) {
-              return {
-                error:
-                  "Could not find any places. Please try a different search.",
+      const result = streamText({
+        model: openai("gpt-4o-mini"),
+        maxSteps: 3,
+        system: SYSTEM_PROMPT,
+        messages,
+        tools: {
+          showPlaces: tool({
+            description:
+              "Search and show places in a carousel. Use a general search query like 'nasi goreng restaurants in Bintaro'. ONLY use when user asks for NEW place recommendations.",
+            parameters: ShowPlacesParamsSchema,
+            execute: async ({ query, count = 5 }) => {
+              console.log(
+                "[ChatRoute] showPlaces called:",
                 query,
-              };
-            }
+                "count:",
+                count
+              );
 
-            return { places };
-          },
-        }),
+              const places = await searchPlaces(query, count);
+              console.log(
+                "[ChatRoute] showPlaces found",
+                places.length,
+                "places"
+              );
+
+              if (places.length === 0) {
+                return {
+                  error:
+                    "Could not find any places. Please try a different search.",
+                  query,
+                };
+              }
+
+              return { places };
+            },
+          }),
+        },
+      });
+
+      return result.toDataStreamResponse();
+    },
+    {
+      body: t.Object({
+        messages: t.Array(
+          t.Object({
+            role: t.Union([t.Literal("user"), t.Literal("assistant")]),
+            content: t.String(),
+          })
+        ),
+      }),
+      detail: {
+        tags: ["Chat"],
+        summary: "Send a chat message",
+        description:
+          "Send a message to the AI assistant. Returns a streaming response with AI-generated text and optional place recommendations.",
       },
-    });
+    }
+  );
 
-    return result.toDataStreamResponse();
-  });

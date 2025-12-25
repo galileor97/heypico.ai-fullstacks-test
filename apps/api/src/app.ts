@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
+import { swagger } from "@elysiajs/swagger";
 import { rateLimit } from "elysia-rate-limit";
 import { env } from "./env";
 import { chatRoute } from "./routes/chat.routes";
@@ -55,6 +56,22 @@ function getErrorResponse(
 export function createApp() {
   return (
     new Elysia()
+      // Swagger/OpenAPI documentation
+      .use(
+        swagger({
+          documentation: {
+            info: {
+              title: "HeyPico API",
+              version: "1.0.0",
+              description: "AI Place Finder API",
+            },
+            tags: [
+              { name: "Chat", description: "Chat endpoints" },
+              { name: "Health", description: "Health check endpoints" },
+            ],
+          },
+        })
+      )
       // CORS configuration
       .use(
         cors({
@@ -82,7 +99,7 @@ export function createApp() {
         return response.body;
       })
       // Health check routes
-      .get("/", () => "AI Place Finder API")
+      .get("/", () => "Welcome to HeyPico API")
       .get("/health", () => ({
         status: "ok",
         timestamp: new Date().toISOString(),
